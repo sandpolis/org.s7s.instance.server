@@ -14,10 +14,11 @@ import com.bmuschko.gradle.docker.tasks.container.*
 import com.bmuschko.gradle.docker.tasks.image.*
 
 plugins {
-	id("eclipse")
 	id("java-library")
-
-	id("com.sandpolis.gradle.soi")
+	id("sandpolis-java")
+	id("sandpolis-module")
+	id("sandpolis-publish")
+	id("sandpolis-soi")
 	id("com.bmuschko.docker-remote-api") version "6.6.0"
 }
 
@@ -40,13 +41,6 @@ dependencies {
 	implementation(project(":com.sandpolis.agent.installer:go"))
 	implementation(project(":com.sandpolis.agent.installer:jar"))
 	implementation(project(":com.sandpolis.agent.installer:py"))
-}
-
-eclipse {
-	project {
-		name = project.name
-		comment = project.name
-	}
 }
 
 val imageSyncBuildContext by tasks.creating(Sync::class) {
