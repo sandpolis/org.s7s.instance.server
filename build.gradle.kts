@@ -23,7 +23,6 @@ plugins {
 }
 
 dependencies {
-	testImplementation(project(path = ":module:com.sandpolis.core.net", configuration = "tests"))
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.1")
 
