@@ -8,6 +8,10 @@ jobs:
     name: Publish release
     runs-on: ubuntu-latest
     steps:
+    - name: Extract version from tag
+      id: get_version
+      run: |
+        echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
     - name: Initialize Java
       uses: actions/setup-java@v1
       with:
@@ -40,7 +44,7 @@ jobs:
         push: true
         tags: |
           sandpolis/server:latest
-          sandpolis/server:${GITHUB_REF#refs/tags/v}
+          sandpolis/server:${{ steps.get_version.outputs.version }}
     - name: Maven publish
       run: |
         gradle --no-daemon :com.sandpolis.server.vanilla:publish
