@@ -109,7 +109,7 @@ public final class Server extends Entrypoint {
 
 		Config.GEOLOCATION_SERVICE.register("ip-api.com");
 
-		Config.PATH_DB.register();
+		Config.PATH_DATA.register();
 		Config.PATH_GEN.register();
 
 		Config.MESSAGE_TIMEOUT.register(1000);
@@ -126,7 +126,7 @@ public final class Server extends Entrypoint {
 	public static final Task loadEnvironment = new Task(outcome -> {
 
 		Environment.LIB.set(Config.PATH_LIB.value().orElse(null)).requireReadable();
-		Environment.DB.set(Config.PATH_DB.value().orElse(null)).requireWritable();
+		Environment.DATA.set(Config.PATH_DATA.value().orElse(null)).requireWritable();
 		Environment.GEN.set(Config.PATH_GEN.value().orElse(null)).requireWritable();
 		Environment.LOG.set(Config.PATH_LOG.value().orElse(null)).requireWritable();
 		Environment.PLUGIN.set(Config.PATH_PLUGIN.value().orElse(null)).requireWritable();
