@@ -40,21 +40,21 @@ dependencies {
 	implementation(project(":com.sandpolis.agent.installer:py"))
 }
 
-val imageSyncBuildContext by tasks.creating(Sync::class) {
+task<Sync>("assembleLib") {
 	dependsOn(tasks.named("jar"))
 	from(configurations.runtimeClasspath)
 	from(tasks.named("jar"))
-	into("${buildDir}/docker/lib")
+	into("${buildDir}/lib")
 }
 
-val imageBuild by tasks.creating(DockerBuildImage::class) {
-	dependsOn(imageSyncBuildContext)
+task<DockerBuildImage>("buildImage") {
+	dependsOn(tasks.named("assembleLib"))
 	inputDir.set(file("."))
 	images.add("sandpolis/server/vanilla:${project.version}")
 	images.add("sandpolis/server/vanilla:latest")
 }
 
-task<Exec>("imageTest") {
-	dependsOn(imageBuild)
+task<Exec>("runImage") {
+	dependsOn(tasks.named("buildImage"))
 	commandLine("docker", "run", "-p", "8768:8768", "--rm", "sandpolis/server/vanilla:latest")
 }
