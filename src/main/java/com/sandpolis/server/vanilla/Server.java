@@ -109,8 +109,12 @@ public final class Server extends Entrypoint {
 
 		Config.GEOLOCATION_SERVICE.register("ip-api.com");
 
+		Config.PATH_LIB.register();
+		Config.PATH_LOG.register();
+		Config.PATH_PLUGIN.register();
+		Config.PATH_TMP.register();
 		Config.PATH_DATA.register();
-		Config.PATH_GEN.register();
+		Config.PATH_CFG.register();
 
 		Config.MESSAGE_TIMEOUT.register(1000);
 
@@ -125,12 +129,12 @@ public final class Server extends Entrypoint {
 	@InitializationTask(name = "Load runtime environment", fatal = true)
 	public static final Task loadEnvironment = new Task(outcome -> {
 
-		Environment.LIB.set(Config.PATH_LIB.value().orElse(null)).requireReadable();
-		Environment.DATA.set(Config.PATH_DATA.value().orElse(null)).requireWritable();
-		Environment.GEN.set(Config.PATH_GEN.value().orElse(null)).requireWritable();
-		Environment.LOG.set(Config.PATH_LOG.value().orElse(null)).requireWritable();
-		Environment.PLUGIN.set(Config.PATH_PLUGIN.value().orElse(null)).requireWritable();
-		Environment.TMP.set(Config.PATH_TMP.value().orElse(null)).requireWritable();
+		Environment.LIB.requireReadable();
+		Environment.DATA.requireWritable();
+		Environment.CFG.requireWritable();
+		Environment.LOG.requireWritable();
+		Environment.PLUGIN.requireWritable();
+		Environment.TMP.requireWritable();
 		return outcome.success();
 	});
 
