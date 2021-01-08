@@ -25,4 +25,4 @@ jobs:
         git submodule update --init --remote --merge com.sandpolis.server.vanilla
     - name: Execute build
       run: |
-        gradle --no-daemon :com.sandpolis.server.vanilla:build
+        gradle --no-daemon :com.sandpolis.server.vanilla:build -x javadoc
