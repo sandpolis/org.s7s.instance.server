@@ -14,6 +14,7 @@ import static com.sandpolis.core.instance.MainDispatch.register;
 import static com.sandpolis.core.instance.plugin.PluginStore.PluginStore;
 import static com.sandpolis.core.instance.pref.PrefStore.PrefStore;
 import static com.sandpolis.core.instance.profile.ProfileStore.ProfileStore;
+import static com.sandpolis.core.instance.state.InstanceOid.InstanceOid;
 import static com.sandpolis.core.instance.state.STStore.STStore;
 import static com.sandpolis.core.instance.thread.ThreadStore.ThreadStore;
 import static com.sandpolis.core.net.connection.ConnectionStore.ConnectionStore;
@@ -49,6 +50,7 @@ import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
 import com.sandpolis.core.instance.Metatypes.InstanceType;
 import com.sandpolis.core.instance.User.UserConfig;
 import com.sandpolis.core.instance.profile.Profile;
+import com.sandpolis.core.instance.state.InstanceOid;
 import com.sandpolis.core.instance.state.oid.AbsoluteOid;
 import com.sandpolis.core.instance.state.st.ephemeral.EphemeralDocument;
 import com.sandpolis.core.instance.state.vst.VirtCollection;
@@ -157,19 +159,6 @@ public final class Server extends Entrypoint {
 				//
 				.setProperty("hibernate.ogm.datastore.create_database", "true");
 
-		List.of(com.sandpolis.core.server.state.HibernateDocument.class,
-				com.sandpolis.core.server.state.HibernateAttribute.class,
-				com.sandpolis.core.server.state.StringAttributeValue.class,
-				com.sandpolis.core.server.state.IntegerAttributeValue.class,
-				com.sandpolis.core.server.state.LongAttributeValue.class,
-				com.sandpolis.core.server.state.BooleanAttributeValue.class,
-				com.sandpolis.core.server.state.DoubleAttributeValue.class,
-				com.sandpolis.core.server.state.OsTypeAttributeValue.class,
-				com.sandpolis.core.server.state.X509CertificateAttributeValue.class,
-				com.sandpolis.core.server.state.InstanceFlavorAttributeValue.class,
-				com.sandpolis.core.server.state.InstanceTypeAttributeValue.class,
-				com.sandpolis.core.server.hibernate.HibernateCollectionMetadata.class).forEach(conf::addAnnotatedClass);
-
 		switch (Config.STORAGE_PROVIDER.value().orElse("mongodb")) {
 		case "mongodb":
 			conf
@@ -213,7 +202,7 @@ public final class Server extends Entrypoint {
 		}
 
 		ProfileStore.init(config -> {
-			config.collection = new VirtCollection<Profile>(STStore.root(), Profile::new);
+			config.collection = STStore.root();
 		});
 
 		ThreadStore.init(config -> {
@@ -229,7 +218,7 @@ public final class Server extends Entrypoint {
 		});
 
 		ConnectionStore.init(config -> {
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().connection();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).connection);
 		});
 
 		ExeletStore.init(config -> {
@@ -266,7 +255,7 @@ public final class Server extends Entrypoint {
 
 		PluginStore.init(config -> {
 			config.verifier = TrustStore::verifyPluginCertificate;
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().plugin();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).plugin);
 		});
 
 		LocationStore.init(config -> {
