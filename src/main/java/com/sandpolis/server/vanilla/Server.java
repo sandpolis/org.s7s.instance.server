@@ -32,7 +32,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,6 @@ import com.sandpolis.core.instance.profile.Profile;
 import com.sandpolis.core.instance.state.InstanceOid;
 import com.sandpolis.core.instance.state.oid.AbsoluteOid;
 import com.sandpolis.core.instance.state.st.ephemeral.EphemeralDocument;
-import com.sandpolis.core.instance.state.vst.VirtCollection;
 import com.sandpolis.core.net.util.CvidUtil;
 import com.sandpolis.core.server.auth.AuthExe;
 import com.sandpolis.core.server.auth.LoginExe;
@@ -61,7 +59,6 @@ import com.sandpolis.core.server.banner.BannerExe;
 import com.sandpolis.core.server.group.GroupExe;
 import com.sandpolis.core.server.listener.ListenerExe;
 import com.sandpolis.core.server.plugin.PluginExe;
-import com.sandpolis.core.server.state.HibernateDocument;
 import com.sandpolis.core.server.state.STExe;
 import com.sandpolis.core.server.stream.StreamExe;
 import com.sandpolis.core.server.user.UserExe;
@@ -155,41 +152,16 @@ public final class Server extends Entrypoint {
 	@InitializationTask(name = "Load static stores", fatal = true)
 	public static final Task loadServerStores = new Task(outcome -> {
 
-		Configuration conf = new Configuration()
-				//
-				.setProperty("hibernate.ogm.datastore.create_database", "true");
-
 		switch (Config.STORAGE_PROVIDER.value().orElse("mongodb")) {
 		case "mongodb":
-			conf
-					//
-					.setProperty("hibernate.ogm.datastore.provider", "mongodb")
-					//
-					.setProperty("hibernate.ogm.datastore.database",
-							Config.MONGODB_DATABASE.value().orElse("Sandpolis"))
-					//
-					.setProperty("hibernate.ogm.datastore.host", Config.MONGODB_HOST.value().orElse("127.0.0.1"))
-					.setProperty("hibernate.ogm.datastore.username", Config.MONGODB_USER.value().orElse(""))
-					.setProperty("hibernate.ogm.datastore.password", Config.MONGODB_PASSWORD.value().orElse(""));
-
-			var em = conf.buildSessionFactory().createEntityManager();
-			STStore.init(config -> {
-				config.concurrency = 2;
-				config.root = em.find(HibernateDocument.class, "st");
-				if (config.root == null) {
-					config.root = new HibernateDocument(null, AbsoluteOid.ROOT);
-
-					em.getTransaction().begin();
-					em.persist(config.root);
-					em.flush();
-					em.getTransaction().commit();
-				}
-
-				// TODO set em
-			});
-
+			// TODO
+			Config.MONGODB_DATABASE.value().orElse("Sandpolis");
+			Config.MONGODB_HOST.value().orElse("127.0.0.1");
+			Config.MONGODB_USER.value().orElse("");
+			Config.MONGODB_PASSWORD.value().orElse("");
 			break;
-		case "infinispan_embedded":
+		case "embedded":
+			// TODO
 			break;
 		case "ephemeral":
 			STStore.init(config -> {
@@ -238,19 +210,19 @@ public final class Server extends Entrypoint {
 		});
 
 		UserStore.init(config -> {
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().server().user();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.user);
 		});
 
 		ListenerStore.init(config -> {
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().server().listener();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.listener);
 		});
 
 		GroupStore.init(config -> {
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().server().group();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.group);
 		});
 
 		TrustStore.init(config -> {
-			config.collection = ProfileStore.getByUuid(Core.UUID).get().server().trustanchor();
+			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.trustanchor);
 		});
 
 		PluginStore.init(config -> {

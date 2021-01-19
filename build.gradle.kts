@@ -26,9 +26,6 @@ dependencies {
 
 	implementation(project(":module:com.sandpolis.core.server"))
 
-	// https://github.com/hibernate/hibernate-ogm
-	implementation("org.hibernate.ogm:hibernate-ogm-mongodb:5.4.1.Final")
-
 	// https://github.com/netty/netty
 	implementation("io.netty:netty-codec:4.1.48.Final")
 	implementation("io.netty:netty-common:4.1.48.Final")
