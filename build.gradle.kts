@@ -30,7 +30,7 @@ dependencies {
 	implementation("io.netty:netty-codec:4.1.48.Final")
 	implementation("io.netty:netty-common:4.1.48.Final")
 	implementation("io.netty:netty-handler:4.1.48.Final")
-	implementation("io.netty:netty-transport:4.1.48.Final")
+	implementation("io.netty:netty-transport:4.1.58.Final")
 
 	implementation(project(":com.sandpolis.agent.installer:go"))
 	implementation(project(":com.sandpolis.agent.installer:jar"))
