@@ -4,7 +4,7 @@ FROM adoptopenjdk:15-hotspot
 WORKDIR /app
 
 # Set application entry
-ENTRYPOINT ["java", "-cp", "/app/lib/*", "com.sandpolis.server.vanilla.Main"]
+ENTRYPOINT ["java", "--enable-preview", "--module-path", "/app/lib", "-m", "com.sandpolis.server.vanilla/com.sandpolis.server.vanilla.Main"]
 
 # Default listening port
 EXPOSE 8768
