@@ -27,7 +27,7 @@ dependencies {
 	implementation(project(":module:com.sandpolis.core.server"))
 
 	// https://github.com/netty/netty
-	implementation("io.netty:netty-codec:4.1.48.Final")
+	implementation("io.netty:netty-codec:4.1.59.Final")
 	implementation("io.netty:netty-common:4.1.48.Final")
 	implementation("io.netty:netty-handler:4.1.48.Final")
 	implementation("io.netty:netty-transport:4.1.48.Final")
