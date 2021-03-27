@@ -24,12 +24,6 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.1")
 
-	// https://github.com/netty/netty
-	implementation("io.netty:netty-codec:4.1.48.Final")
-	implementation("io.netty:netty-common:4.1.48.Final")
-	implementation("io.netty:netty-handler:4.1.48.Final")
-	implementation("io.netty:netty-transport:4.1.48.Final")
-
 	if (project.getParent() == null) {
 		implementation("com.sandpolis:core.server:0.1.0")
 	} else {
