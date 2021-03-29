@@ -10,14 +10,14 @@ ENTRYPOINT ["java", "--module-path", "/app/lib", "-m", "com.sandpolis.server.van
 EXPOSE 8768
 
 # Set environment
-ENV SANDPOLIS_STORAGE_PROVIDER      "ephemeral"
-ENV SANDPOLIS_NET_CONNECTION_TLS    "true"
-ENV SANDPOLIS_NET_LOGGING_DECODED   "false"
-ENV SANDPOLIS_NET_LOGGING_RAW       "false"
-ENV SANDPOLIS_PATH_GEN              "/tmp"
-ENV SANDPOLIS_PATH_LIB              "/app/lib"
-ENV SANDPOLIS_PATH_PLUGIN           "/app/plugin"
-ENV SANDPOLIS_PLUGINS_ENABLED       "true"
+ENV S7S_STORAGE_PROVIDER      "ephemeral"
+ENV S7S_NET_CONNECTION_TLS    "true"
+ENV S7S_NET_LOGGING_DECODED   "false"
+ENV S7S_NET_LOGGING_RAW       "false"
+ENV S7S_PATH_GEN              "/tmp"
+ENV S7S_PATH_LIB              "/app/lib"
+ENV S7S_PATH_PLUGIN           "/app/plugin"
+ENV S7S_PLUGINS_ENABLED       "true"
 
 # Enable JVM debugging
 #ENV JAVA_TOOL_OPTIONS "-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:7000,server=y,suspend=y"

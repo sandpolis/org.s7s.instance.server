@@ -35,7 +35,6 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sandpolis.core.foundation.Config;
 import com.sandpolis.core.instance.Core;
 import com.sandpolis.core.instance.Entrypoint;
 import com.sandpolis.core.instance.Environment;
@@ -48,14 +47,14 @@ import com.sandpolis.core.instance.MainDispatch.Task;
 import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
 import com.sandpolis.core.instance.Metatypes.InstanceType;
 import com.sandpolis.core.instance.User.UserConfig;
-import com.sandpolis.core.instance.profile.Profile;
-import com.sandpolis.core.instance.state.InstanceOid;
-import com.sandpolis.core.instance.state.oid.AbsoluteOid;
+import com.sandpolis.core.instance.config.CfgInstance;
 import com.sandpolis.core.instance.state.st.ephemeral.EphemeralDocument;
+import com.sandpolis.core.net.config.CfgNet;
 import com.sandpolis.core.net.util.CvidUtil;
 import com.sandpolis.core.server.auth.AuthExe;
 import com.sandpolis.core.server.auth.LoginExe;
 import com.sandpolis.core.server.banner.BannerExe;
+import com.sandpolis.core.server.config.CfgServer;
 import com.sandpolis.core.server.group.GroupExe;
 import com.sandpolis.core.server.listener.ListenerExe;
 import com.sandpolis.core.server.plugin.PluginExe;
@@ -96,28 +95,26 @@ public final class Server extends Entrypoint {
 	 */
 	@InitializationTask(name = "Load server configuration", fatal = true)
 	public static final Task loadConfiguration = new Task(outcome -> {
-		Config.DB_PROVIDER.register("hibernate");
-		Config.DB_URL.register();
-		Config.DB_USERNAME.register();
-		Config.DB_PASSWORD.register();
+		CfgServer.DB_PROVIDER.register("hibernate");
+		CfgServer.DB_URL.register();
+		CfgServer.DB_USERNAME.register();
+		CfgServer.DB_PASSWORD.register();
 
-		Config.DEBUG_AGENT.register(true);
+		CfgServer.BANNER_TEXT.register("Welcome to a Sandpolis Server");
+		CfgServer.BANNER_IMAGE.register();
 
-		Config.BANNER_TEXT.register("Welcome to a Sandpolis Server");
-		Config.BANNER_IMAGE.register();
+		CfgServer.GEOLOCATION_SERVICE.register("ip-api.com");
 
-		Config.GEOLOCATION_SERVICE.register("ip-api.com");
+		CfgInstance.PATH_LIB.register();
+		CfgInstance.PATH_LOG.register();
+		CfgInstance.PATH_PLUGIN.register();
+		CfgInstance.PATH_TMP.register();
+		CfgInstance.PATH_DATA.register();
+		CfgInstance.PATH_CFG.register();
 
-		Config.PATH_LIB.register();
-		Config.PATH_LOG.register();
-		Config.PATH_PLUGIN.register();
-		Config.PATH_TMP.register();
-		Config.PATH_DATA.register();
-		Config.PATH_CFG.register();
+		CfgInstance.PLUGIN_ENABLED.register(true);
 
-		Config.MESSAGE_TIMEOUT.register(1000);
-
-		Config.PLUGIN_ENABLED.register(true);
+		CfgNet.MESSAGE_TIMEOUT.register(1000);
 
 		return outcome.success();
 	});
@@ -152,13 +149,13 @@ public final class Server extends Entrypoint {
 	@InitializationTask(name = "Load static stores", fatal = true)
 	public static final Task loadServerStores = new Task(outcome -> {
 
-		switch (Config.STORAGE_PROVIDER.value().orElse("mongodb")) {
+		switch (CfgServer.STORAGE_PROVIDER.value().orElse("mongodb")) {
 		case "mongodb":
 			// TODO
-			Config.MONGODB_DATABASE.value().orElse("Sandpolis");
-			Config.MONGODB_HOST.value().orElse("127.0.0.1");
-			Config.MONGODB_USER.value().orElse("");
-			Config.MONGODB_PASSWORD.value().orElse("");
+			CfgServer.MONGODB_DATABASE.value().orElse("Sandpolis");
+			CfgServer.MONGODB_HOST.value().orElse("127.0.0.1");
+			CfgServer.MONGODB_USER.value().orElse("");
+			CfgServer.MONGODB_PASSWORD.value().orElse("");
 			break;
 		case "embedded":
 			// TODO
@@ -231,8 +228,8 @@ public final class Server extends Entrypoint {
 		});
 
 		LocationStore.init(config -> {
-			config.service = Config.GEOLOCATION_SERVICE.value().orElse(null);
-			config.key = Config.GEOLOCATION_SERVICE_KEY.value().orElse(null);
+			config.service = CfgServer.GEOLOCATION_SERVICE.value().orElse(null);
+			config.key = CfgServer.GEOLOCATION_SERVICE_KEY.value().orElse(null);
 			config.cacheExpiration = Duration.ofDays(10);
 		});
 
@@ -270,7 +267,7 @@ public final class Server extends Entrypoint {
 	 */
 	@InitializationTask(name = "Load server plugins")
 	public static final Task loadPlugins = new Task(outcome -> {
-		if (!Config.PLUGIN_ENABLED.value().orElse(true))
+		if (!CfgInstance.PLUGIN_ENABLED.value().orElse(true))
 			return outcome.skipped();
 
 		PluginStore.scanPluginDirectory();
