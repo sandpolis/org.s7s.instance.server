@@ -171,7 +171,7 @@ public final class Server extends Entrypoint {
 		}
 
 		ProfileStore.init(config -> {
-			config.collection = STStore.root();
+			config.collection = STStore.get(InstanceOid().profile);
 		});
 
 		ThreadStore.init(config -> {
@@ -207,7 +207,7 @@ public final class Server extends Entrypoint {
 		});
 
 		UserStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.user);
+			config.collection = STStore.get(InstanceOid().user);
 		});
 
 		ListenerStore.init(config -> {
@@ -215,7 +215,7 @@ public final class Server extends Entrypoint {
 		});
 
 		GroupStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.group);
+			config.collection = STStore.get(InstanceOid().group);
 		});
 
 		TrustStore.init(config -> {
