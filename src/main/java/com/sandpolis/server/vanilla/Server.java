@@ -14,7 +14,6 @@ import static com.sandpolis.core.instance.MainDispatch.register;
 import static com.sandpolis.core.instance.plugin.PluginStore.PluginStore;
 import static com.sandpolis.core.instance.pref.PrefStore.PrefStore;
 import static com.sandpolis.core.instance.profile.ProfileStore.ProfileStore;
-import static com.sandpolis.core.instance.state.InstanceOid.InstanceOid;
 import static com.sandpolis.core.instance.state.STStore.STStore;
 import static com.sandpolis.core.instance.thread.ThreadStore.ThreadStore;
 import static com.sandpolis.core.net.connection.ConnectionStore.ConnectionStore;
@@ -48,7 +47,8 @@ import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
 import com.sandpolis.core.instance.Metatypes.InstanceType;
 import com.sandpolis.core.instance.User.UserConfig;
 import com.sandpolis.core.instance.config.CfgInstance;
-import com.sandpolis.core.instance.state.st.ephemeral.EphemeralDocument;
+import com.sandpolis.core.instance.state.oid.Oid;
+import com.sandpolis.core.instance.state.st.EphemeralDocument;
 import com.sandpolis.core.net.config.CfgNet;
 import com.sandpolis.core.net.util.CvidUtil;
 import com.sandpolis.core.server.auth.AuthExe;
@@ -163,7 +163,7 @@ public final class Server extends Entrypoint {
 		case "ephemeral":
 			STStore.init(config -> {
 				config.concurrency = 2;
-				config.root = new EphemeralDocument();
+				config.root = new EphemeralDocument(null, null);
 			});
 			break;
 		default:
@@ -171,7 +171,7 @@ public final class Server extends Entrypoint {
 		}
 
 		ProfileStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile);
+			config.collection = Oid.of("/profile").get();
 		});
 
 		ThreadStore.init(config -> {
@@ -187,7 +187,7 @@ public final class Server extends Entrypoint {
 		});
 
 		ConnectionStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).connection);
+			config.collection = Oid.of("/profile//connection", Core.UUID).get();
 		});
 
 		ExeletStore.init(config -> {
@@ -207,24 +207,24 @@ public final class Server extends Entrypoint {
 		});
 
 		UserStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().user);
+			config.collection = Oid.of("/user").get();
 		});
 
 		ListenerStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.listener);
+			config.collection = Oid.of("/profile//server/listener", Core.UUID).get();
 		});
 
 		GroupStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().group);
+			config.collection = Oid.of("/group").get();
 		});
 
 		TrustStore.init(config -> {
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).server.trustanchor);
+			config.collection = Oid.of("/trust_anchor").get();
 		});
 
 		PluginStore.init(config -> {
 			config.verifier = TrustStore::verifyPluginCertificate;
-			config.collection = STStore.get(InstanceOid().profile(Core.UUID).plugin);
+			config.collection = Oid.of("/profile//plugin", Core.UUID).get();
 		});
 
 		LocationStore.init(config -> {

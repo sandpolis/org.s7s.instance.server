@@ -47,5 +47,5 @@ task<DockerBuildImage>("buildImage") {
 
 task<Exec>("runImage") {
 	dependsOn(tasks.named("buildImage"))
-	commandLine("docker", "run", "-p", "8768:8768", "--rm", "-e", "S7S_DEVELOPMENT_MODE=true", "-e", "S7S_LOG_LEVELS=io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE", "sandpolis/server/vanilla:latest")
+	commandLine("docker", "run", "-p", "8768:8768", "-p", "7000:7000", "--rm", "-e", "S7S_DEVELOPMENT_MODE=true", "-e", "S7S_LOG_LEVELS=io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE", "sandpolis/server/vanilla:latest")
 }
