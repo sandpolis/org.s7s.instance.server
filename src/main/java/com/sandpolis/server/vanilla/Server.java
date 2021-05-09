@@ -184,10 +184,11 @@ public final class Server extends Entrypoint {
 
 		NetworkStore.init(config -> {
 			config.cvid = Core.cvid();
+			config.collection = Oid.of("/network_connection").get();
 		});
 
 		ConnectionStore.init(config -> {
-			config.collection = Oid.of("/profile//connection", Core.UUID).get();
+			config.collection = Oid.of("/connection").get();
 		});
 
 		ExeletStore.init(config -> {
