@@ -9,23 +9,34 @@
 //============================================================================//
 package com.sandpolis.server.vanilla;
 
-import com.sandpolis.core.instance.MainDispatch;
+import com.sandpolis.core.instance.Entrypoint;
 import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
 import com.sandpolis.core.instance.Metatypes.InstanceType;
+import com.sandpolis.core.instance.init.InstanceLoadEnvironment;
+import com.sandpolis.core.instance.init.InstanceLoadPlugins;
+import com.sandpolis.core.server.init.ServerFirstTimeSetup;
+import com.sandpolis.core.server.init.ServerLoadConfiguration;
+import com.sandpolis.core.server.init.ServerLoadListeners;
+import com.sandpolis.core.server.init.ServerLoadStores;
 
-/**
- * This stub is the entry point for Server instances. Control is given to
- * {@link MainDispatch} for initialization.
- *
- * @author cilki
- * @since 5.0.0
- */
-public final class Main {
-	private Main() {
+public final class Main extends Entrypoint {
+
+	private Main(String[] args) {
+		super(Main.class, InstanceType.SERVER, InstanceFlavor.VANILLA);
+
+		register(new ServerLoadConfiguration());
+		register(new InstanceLoadEnvironment());
+		register(new ServerLoadStores());
+		register(new InstanceLoadPlugins());
+		register(new ServerFirstTimeSetup());
+		register(new ServerLoadListeners());
+
+//		register(Server.shutdown);
+
+		start("Sandpolis Server", args);
 	}
 
 	public static void main(String[] args) {
-		MainDispatch.dispatch(Server.class, args, InstanceType.SERVER, InstanceFlavor.VANILLA);
+		new Main(args);
 	}
-
 }
