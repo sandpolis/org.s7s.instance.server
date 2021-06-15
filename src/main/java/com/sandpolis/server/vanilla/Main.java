@@ -31,8 +31,6 @@ public final class Main extends Entrypoint {
 		register(new ServerFirstTimeSetup());
 		register(new ServerLoadListeners());
 
-//		register(Server.shutdown);
-
 		start("Sandpolis Server", args);
 	}
 
