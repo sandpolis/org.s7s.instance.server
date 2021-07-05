@@ -8,16 +8,23 @@
 //                                                                            //
 //============================================================================//
 
-import com.bmuschko.gradle.docker.tasks.container.*
-import com.bmuschko.gradle.docker.tasks.image.*
-
 plugins {
 	id("java-library")
 	id("sandpolis-java")
 	id("sandpolis-module")
 	id("sandpolis-publish")
 	id("sandpolis-soi")
-	id("com.bmuschko.docker-remote-api") version "6.6.0"
+	id("application")
+}
+
+application {
+    mainModule.set("com.sandpolis.server.vanilla")
+    mainClass.set("com.sandpolis.server.vanilla.Main")
+}
+
+tasks.named<JavaExec>("run") {
+    environment.put("S7S_DEVELOPMENT_MODE", "true")
+	environment.put("S7S_LOG_LEVELS", "io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE")
 }
 
 dependencies {
@@ -40,16 +47,4 @@ task<Sync>("assembleLib") {
 	from(configurations.runtimeClasspath)
 	from(tasks.named("jar"))
 	into("${buildDir}/lib")
-}
-
-task<DockerBuildImage>("buildImage") {
-	dependsOn(tasks.named("assembleLib"))
-	inputDir.set(file("."))
-	images.add("sandpolis/server/vanilla:${project.version}")
-	images.add("sandpolis/server/vanilla:latest")
-}
-
-task<Exec>("runImage") {
-	dependsOn(tasks.named("buildImage"))
-	commandLine("docker", "run", "-p", "8768:8768", "-p", "7000:7000", "--rm", "-e", "S7S_DEVELOPMENT_MODE=true", "-e", "S7S_LOG_LEVELS=io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE", "sandpolis/server/vanilla:latest")
 }
