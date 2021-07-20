@@ -22,7 +22,7 @@ import com.sandpolis.core.server.init.ServerLoadStores;
 public final class Main extends Entrypoint {
 
 	private Main(String[] args) {
-		super(Main.class, InstanceType.SERVER, InstanceFlavor.VANILLA);
+		super(Main.class, InstanceType.SERVER, InstanceFlavor.SERVER_VANILLA);
 
 		register(new ServerLoadConfiguration());
 		register(new InstanceLoadEnvironment());
