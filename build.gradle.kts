@@ -48,3 +48,19 @@ task<Sync>("assembleLib") {
 	from(tasks.named("jar"))
 	into("${buildDir}/lib")
 }
+
+val syncPlugins by tasks.creating(Copy::class) {
+    into("build/plugin")
+
+    project(":plugin").subprojects {
+        afterEvaluate {
+            tasks.findByName("pluginArchive")?.let { pluginArchiveTask ->
+                from(pluginArchiveTask)
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.findByName("run")?.dependsOn(syncPlugins)
+}
