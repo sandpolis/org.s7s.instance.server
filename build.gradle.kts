@@ -11,19 +11,18 @@
 plugins {
 	id("java-library")
 	id("sandpolis-java")
-	id("sandpolis-module")
+	id("sandpolis-instance")
 	id("sandpolis-publish")
-	id("sandpolis-soi")
 	id("application")
 }
 
 application {
-    mainModule.set("com.sandpolis.server.vanilla")
-    mainClass.set("com.sandpolis.server.vanilla.Main")
+	mainModule.set("com.sandpolis.server.vanilla")
+	mainClass.set("com.sandpolis.server.vanilla.Main")
 }
 
 tasks.named<JavaExec>("run") {
-    environment.put("S7S_DEVELOPMENT_MODE", "true")
+	environment.put("S7S_DEVELOPMENT_MODE", "true")
 	environment.put("S7S_LOG_LEVELS", "io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE")
 }
 
@@ -49,18 +48,20 @@ task<Sync>("assembleLib") {
 	into("${buildDir}/lib")
 }
 
-val syncPlugins by tasks.creating(Copy::class) {
-    into("build/plugin")
+if (System.getenv("S7S_BUILD_DISABLE_SERVER_PLUGINS") != "1") {
+	val syncPlugins by tasks.creating(Copy::class) {
+		into("build/plugin")
 
-    project(":plugin").subprojects {
-        afterEvaluate {
-            tasks.findByName("pluginArchive")?.let { pluginArchiveTask ->
-                from(pluginArchiveTask)
-            }
-        }
-    }
-}
+		project(":plugin").subprojects {
+			afterEvaluate {
+				tasks.findByName("pluginArchive")?.let { pluginArchiveTask ->
+					from(pluginArchiveTask)
+				}
+			}
+		}
+	}
 
-afterEvaluate {
-    tasks.findByName("run")?.dependsOn(syncPlugins)
+	afterEvaluate {
+		tasks.findByName("run")?.dependsOn(syncPlugins)
+	}
 }
