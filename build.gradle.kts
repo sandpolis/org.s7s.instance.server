@@ -19,6 +19,7 @@ plugins {
 application {
 	mainModule.set("com.sandpolis.server.vanilla")
 	mainClass.set("com.sandpolis.server.vanilla.Main")
+	applicationDefaultJvmArgs = listOf("--enable-native-access=com.sandpolis.core.foreign")
 }
 
 tasks.named<JavaExec>("run") {
@@ -39,13 +40,6 @@ dependencies {
 		implementation(project(":module:com.sandpolis.core.net"))
 		implementation(project(":module:com.sandpolis.core.instance"))
 	}
-}
-
-task<Sync>("assembleLib") {
-	dependsOn(tasks.named("jar"))
-	from(configurations.runtimeClasspath)
-	from(tasks.named("jar"))
-	into("${buildDir}/lib")
 }
 
 if (System.getenv("S7S_BUILD_DISABLE_SERVER_PLUGINS") != "1") {

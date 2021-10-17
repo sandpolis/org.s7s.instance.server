@@ -1,35 +1,8 @@
 version: 2
 updates:
-- package-ecosystem: gradle
-  directory: "/"
-  schedule:
-    interval: daily
-    timezone: America/Chicago
-  open-pull-requests-limit: 99
-  ignore:
-  - dependency-name: io.netty:netty-common
-    versions:
-    - 4.1.58.Final
-    - 4.1.59.Final
-    - 4.1.60.Final
-  - dependency-name: io.netty:netty-transport
-    versions:
-    - 4.1.58.Final
-    - 4.1.59.Final
-    - 4.1.60.Final
-  - dependency-name: io.netty:netty-handler
-    versions:
-    - 4.1.58.Final
-    - 4.1.59.Final
-    - 4.1.60.Final
-  - dependency-name: io.netty:netty-codec
-    versions:
-    - 4.1.58.Final
-    - 4.1.59.Final
-    - 4.1.60.Final
-  - dependency-name: org.junit.jupiter:junit-jupiter-engine
-    versions:
-    - 5.7.0
-  - dependency-name: org.junit.jupiter:junit-jupiter-api
-    versions:
-    - 5.7.0
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: daily
+      timezone: America/Chicago
+    open-pull-requests-limit: 99
