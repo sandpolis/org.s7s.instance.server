@@ -12,7 +12,6 @@ package com.sandpolis.server.vanilla;
 import com.sandpolis.core.instance.Entrypoint;
 import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
 import com.sandpolis.core.instance.Metatypes.InstanceType;
-import com.sandpolis.core.instance.init.InstanceLoadEnvironment;
 import com.sandpolis.core.instance.init.InstanceLoadPlugins;
 import com.sandpolis.core.server.init.ServerFirstTimeSetup;
 import com.sandpolis.core.server.init.ServerLoadListeners;
@@ -23,7 +22,6 @@ public final class Main extends Entrypoint {
 	private Main(String[] args) {
 		super(Main.class, InstanceType.SERVER, InstanceFlavor.SERVER_VANILLA);
 
-		register(new InstanceLoadEnvironment());
 		register(new ServerLoadStores());
 		register(new InstanceLoadPlugins());
 		register(new ServerFirstTimeSetup());
