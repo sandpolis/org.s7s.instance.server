@@ -28,8 +28,8 @@ tasks.named<JavaExec>("run") {
 }
 
 dependencies {
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.+")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.+")
 
 	if (project.getParent() == null) {
 		implementation("com.sandpolis:core.server:+")
@@ -42,7 +42,8 @@ dependencies {
 	}
 }
 
-if (System.getenv("S7S_BUILD_DISABLE_SERVER_PLUGINS") != "1") {
+// Also build plugins unless this is the root project
+if (project.getParent() != null) {
 	val syncPlugins by tasks.creating(Copy::class) {
 		into("build/plugin")
 
