@@ -1,4 +1,4 @@
-FROM adoptopenjdk:17-hotspot
+FROM eclipse-temurin:17
 
 # Set application directory
 WORKDIR /app
@@ -14,7 +14,6 @@ ENV S7S_RUNTIME_RESIDENCY     "container"
 ENV S7S_PATH_GEN              "/tmp"
 ENV S7S_PATH_LIB              "/app/lib"
 ENV S7S_PATH_PLUGIN           "/app/plugin"
-ENV S7S_PLUGINS_ENABLED       "true"
 
 # Install application
 COPY build/lib /app/lib
