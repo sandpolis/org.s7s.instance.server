@@ -12,7 +12,6 @@ open module com.sandpolis.server.vanilla {
 	requires com.sandpolis.core.clientserver;
 	requires com.sandpolis.core.foundation;
 	requires com.sandpolis.core.instance;
-	requires com.sandpolis.core.net;
 	requires com.sandpolis.core.server;
 	requires com.sandpolis.core.serveragent;
 	requires io.netty.buffer;
