@@ -35,8 +35,8 @@ dependencies {
 		implementation("com.sandpolis:core.server:+")
 		implementation("com.sandpolis:core.instance:+")
 	} else {
-		implementation(project(":module:com.sandpolis.core.server"))
-		implementation(project(":module:com.sandpolis.core.instance"))
+		implementation(project(":core:com.sandpolis.core.server"))
+		implementation(project(":core:com.sandpolis.core.instance"))
 	}
 }
 
