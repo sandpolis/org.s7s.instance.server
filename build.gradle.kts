@@ -1,30 +1,29 @@
 //============================================================================//
 //                                                                            //
-//                         Copyright © 2015 Sandpolis                         //
+//            Copyright © 2015 - 2022 Sandpolis Software Foundation           //
 //                                                                            //
 //  This source file is subject to the terms of the Mozilla Public License    //
-//  version 2. You may not use this file except in compliance with the MPL    //
-//  as published by the Mozilla Foundation.                                   //
+//  version 2. You may not use this file except in compliance with the MPLv2. //
 //                                                                            //
 //============================================================================//
 
 plugins {
 	id("java-library")
 	id("application")
-	id("com.sandpolis.build.module")
-	id("com.sandpolis.build.instance")
-	id("com.sandpolis.build.publish")
+	id("org.s7s.build.module")
+	id("org.s7s.build.instance")
+	id("org.s7s.build.publish")
 }
 
 application {
-	mainModule.set("com.sandpolis.server.vanilla")
-	mainClass.set("com.sandpolis.server.vanilla.Main")
-	applicationDefaultJvmArgs = listOf("--enable-native-access=com.sandpolis.core.foreign")
+	mainModule.set("org.s7s.instance.server.java")
+	mainClass.set("org.s7s.instance.server.java.Main")
+	applicationDefaultJvmArgs = listOf("--enable-native-access=org.s7s.core.foreign")
 }
 
 tasks.named<JavaExec>("run") {
 	environment.put("S7S_DEVELOPMENT_MODE", "true")
-	environment.put("S7S_LOG_LEVELS", "io.netty=WARN,java.util.prefs=OFF,com.sandpolis=TRACE")
+	environment.put("S7S_LOG_LEVELS", "io.netty=WARN,java.util.prefs=OFF,org.s7s=TRACE")
 }
 
 dependencies {
@@ -32,11 +31,11 @@ dependencies {
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.+")
 
 	if (project.getParent() == null) {
-		implementation("com.sandpolis:core.server:+")
-		implementation("com.sandpolis:core.instance:+")
+		implementation("org.s7s:core.server:+")
+		implementation("org.s7s:core.instance:+")
 	} else {
-		implementation(project(":core:com.sandpolis.core.server"))
-		implementation(project(":core:com.sandpolis.core.instance"))
+		implementation(project(":core:org.s7s.core.server"))
+		implementation(project(":core:org.s7s.core.instance"))
 	}
 }
 

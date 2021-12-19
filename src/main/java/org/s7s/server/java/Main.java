@@ -1,21 +1,20 @@
 //============================================================================//
 //                                                                            //
-//                         Copyright © 2015 Sandpolis                         //
+//            Copyright © 2015 - 2022 Sandpolis Software Foundation           //
 //                                                                            //
 //  This source file is subject to the terms of the Mozilla Public License    //
-//  version 2. You may not use this file except in compliance with the MPL    //
-//  as published by the Mozilla Foundation.                                   //
+//  version 2. You may not use this file except in compliance with the MPLv2. //
 //                                                                            //
 //============================================================================//
-package com.sandpolis.server.vanilla;
+package org.s7s.instance.server.java;
 
-import com.sandpolis.core.instance.Entrypoint;
-import com.sandpolis.core.instance.Metatypes.InstanceFlavor;
-import com.sandpolis.core.instance.Metatypes.InstanceType;
-import com.sandpolis.core.instance.init.InstanceLoadPlugins;
-import com.sandpolis.core.server.init.ServerFirstTimeSetup;
-import com.sandpolis.core.server.init.ServerLoadListeners;
-import com.sandpolis.core.server.init.ServerLoadStores;
+import org.s7s.core.instance.Entrypoint;
+import org.s7s.core.instance.Metatypes.InstanceFlavor;
+import org.s7s.core.instance.Metatypes.InstanceType;
+import org.s7s.core.instance.init.InstanceLoadPlugins;
+import org.s7s.core.server.init.ServerFirstTimeSetup;
+import org.s7s.core.server.init.ServerLoadListeners;
+import org.s7s.core.server.init.ServerLoadStores;
 
 public final class Main extends Entrypoint {
 

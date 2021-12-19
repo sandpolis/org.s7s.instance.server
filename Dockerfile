@@ -4,7 +4,7 @@ FROM eclipse-temurin:17
 WORKDIR /app
 
 # Set application entry
-ENTRYPOINT ["java", "--module-path", "/app/lib", "-m", "com.sandpolis.server.vanilla/com.sandpolis.server.vanilla.Main"]
+ENTRYPOINT ["java", "--module-path", "/app/lib", "-m", "org.s7s.instance.server.java/org.s7s.instance.server.java.Main"]
 
 # Default listening port
 EXPOSE 8768
