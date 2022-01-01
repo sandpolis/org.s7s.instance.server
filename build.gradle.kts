@@ -32,10 +32,8 @@ dependencies {
 
 	if (project.getParent() == null) {
 		implementation("org.s7s:core.server:+")
-		implementation("org.s7s:core.instance:+")
 	} else {
 		implementation(project(":core:org.s7s.core.server"))
-		implementation(project(":core:org.s7s.core.instance"))
 	}
 }
 

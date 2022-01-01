@@ -9,8 +9,8 @@
 package org.s7s.instance.server.java;
 
 import org.s7s.core.instance.Entrypoint;
-import org.s7s.core.instance.Metatypes.InstanceFlavor;
-import org.s7s.core.instance.Metatypes.InstanceType;
+import org.s7s.core.foundation.Instance.InstanceFlavor;
+import org.s7s.core.foundation.Instance.InstanceType;
 import org.s7s.core.instance.init.InstanceLoadPlugins;
 import org.s7s.core.server.init.ServerFirstTimeSetup;
 import org.s7s.core.server.init.ServerLoadListeners;
@@ -19,7 +19,7 @@ import org.s7s.core.server.init.ServerLoadStores;
 public final class Main extends Entrypoint {
 
 	private Main(String[] args) {
-		super(Main.class, InstanceType.SERVER, InstanceFlavor.SERVER_VANILLA);
+		super(Main.class, InstanceType.SERVER, InstanceFlavor.SERVER_JAVA);
 
 		register(new ServerLoadStores());
 		register(new InstanceLoadPlugins());
