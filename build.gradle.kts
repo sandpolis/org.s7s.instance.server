@@ -31,9 +31,9 @@ dependencies {
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.+")
 
 	if (project.getParent() == null) {
-		implementation("org.s7s:core.server:+")
+		api("org.s7s:core.instance:+")
 	} else {
-		implementation(project(":core:org.s7s.core.server"))
+		api(project(":core:instance"))
 	}
 }
 
