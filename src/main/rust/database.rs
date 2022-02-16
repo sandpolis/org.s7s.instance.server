@@ -1,5 +1,5 @@
+use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
-use anyhow::{Result, bail};
 
 #[derive(Serialize)]
 struct PostSession {
@@ -13,38 +13,94 @@ struct RsPostSession {
     name: String,
 }
 
+#[derive(Clone)]
 pub struct DbConnection {
-	host: String,
+    host: String,
     client: reqwest::Client,
 }
 
 impl DbConnection {
-    pub async fn new(
-        host: String,
-        username: String,
-        password: String,
-    ) -> Result<DbConnection> {
-        let client = reqwest::Client::builder().cookie_store(true).build()?;
+    pub async fn new(host: &str, username: &str, password: &str) -> Result<DbConnection> {
+        let client = reqwest::Client::builder()
+            .cookie_store(true)
+            .build()?;
 
         let rs = client
-            .post(host.clone() + "/_session")
+            .post(format!("{}/_session", host))
+            .header("Content-Type", "application/json")
             .json(&PostSession {
-                username: username,
-                password: password,
+                username: username.to_string(),
+                password: password.to_string(),
             })
             .send()
             .await?
             .json::<RsPostSession>()
             .await?;
 
-        if ! rs.ok {
-        	bail!("Account error");
+        if !rs.ok {
+            bail!("Account error");
         }
 
-        Ok(DbConnection { host: host, client: client })
+        Ok(DbConnection {
+            host: host.to_string(),
+            client: client,
+        })
     }
 
-    pub async fn create_db(&self, db: String) -> Result<()> {
-    	self.client.put(self.host + "/" + db).await
+    /// Create persistent databases if necessary and reset transient databases.
+    pub async fn setup_db(&self) -> Result<()> {
+        for persistent_db in vec!["users", "listeners", "groups", "instances", "plugins"] {
+            if !self
+                .client
+                .get(format!("{}/{}", self.host, persistent_db))
+                .send()
+                .await?
+                .status()
+                .is_success()
+            {
+                if !self
+                    .client
+                    .put(format!("{}/{}", self.host, persistent_db))
+                    .send()
+                    .await?
+                    .status()
+                    .is_success()
+                {
+                    bail!("Failed to create database");
+                }
+            }
+        }
+
+        for transient_db in vec!["network", "connections", "streams"] {
+            self.client
+                .delete(format!("{}/{}", self.host, transient_db))
+                .send()
+                .await?
+                .status()
+                .is_success();
+
+            if !self
+                .client
+                .put(format!("{}/{}", self.host, transient_db))
+                .send()
+                .await?
+                .status()
+                .is_success()
+            {
+                bail!("Failed to create database");
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn list_oid(&self, oid: &str) -> Result<()> {
+    	self
+        .client
+        .get(format!("{}/instances/_all_docs?startkey=%22/{}/%22&endkey=%22{}/%EF%BF%B0%22&include_docs=true", self.host, oid, oid))
+        .send()
+        .await?;
+
+        Ok(())
     }
 }

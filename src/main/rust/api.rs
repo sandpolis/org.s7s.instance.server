@@ -1,13 +1,36 @@
 pub mod server {
 
+    use crate::DbConnection;
+    use core_protocol::core::protocol::RqCreateGroup;
+    use actix_web::web::Data;
     use actix_session::Session;
     use actix_web::{
         http::{header::ContentType, StatusCode},
         HttpRequest, HttpResponse, Result,
     };
+    use crate::ServerContext;
+
+    /*async fn check_session(session: Session, db: &DbConnection) -> Result<()> {
+        Ok(())
+    }*/
+
+    #[actix_web::get("/v1/server/{iid}/users")]
+    async fn list_users(rq: HttpRequest, session: Session, context: Data<ServerContext>) -> Result<HttpResponse> {
+        /*match check_session(session, &context.db).await {
+            Ok(user) => {
+            },
+            Err(_) => 
+        }*/
+
+        let users = context.users.read().unwrap();
+
+        Ok(HttpResponse::build(StatusCode::OK)
+            .content_type(ContentType::octet_stream())
+            .body(vec![]))
+    }
 
     #[actix_web::post("/v1/server/{iid}/session")]
-    async fn new_session(rq: HttpRequest, session: Session) -> Result<HttpResponse> {
+    async fn new_session(rq: HttpRequest) -> Result<HttpResponse> {
         Ok(HttpResponse::build(StatusCode::OK)
             .content_type(ContentType::octet_stream())
             .body(vec![]))
@@ -35,7 +58,7 @@ pub mod agent {
         web, HttpRequest, HttpResponse, Result,
     };
 
-    #[actix_web::get("/v1/agent/{iid}/reboot")]
+    #[actix_web::post("/v1/agent/{iid}/reboot")]
     async fn reboot(rq: HttpRequest, iid: web::Path<String>) -> Result<HttpResponse> {
         Ok(HttpResponse::build(StatusCode::OK)
             .content_type(ContentType::octet_stream())
