@@ -1,3 +1,4 @@
+use crate::User;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
@@ -15,18 +16,16 @@ struct RsPostSession {
 
 #[derive(Clone)]
 pub struct DbConnection {
-    host: String,
+    address: String,
     client: reqwest::Client,
 }
 
 impl DbConnection {
-    pub async fn new(host: &str, username: &str, password: &str) -> Result<DbConnection> {
-        let client = reqwest::Client::builder()
-            .cookie_store(true)
-            .build()?;
+    pub async fn new(address: &str, username: &str, password: &str) -> Result<DbConnection> {
+        let client = reqwest::Client::builder().cookie_store(true).build()?;
 
         let rs = client
-            .post(format!("{}/_session", host))
+            .post(format!("{}/_session", address))
             .header("Content-Type", "application/json")
             .json(&PostSession {
                 username: username.to_string(),
@@ -42,7 +41,7 @@ impl DbConnection {
         }
 
         Ok(DbConnection {
-            host: host.to_string(),
+            address: address.to_string(),
             client: client,
         })
     }
@@ -52,7 +51,7 @@ impl DbConnection {
         for persistent_db in vec!["users", "listeners", "groups", "instances", "plugins"] {
             if !self
                 .client
-                .get(format!("{}/{}", self.host, persistent_db))
+                .get(format!("{}/{}", self.address, persistent_db))
                 .send()
                 .await?
                 .status()
@@ -60,7 +59,7 @@ impl DbConnection {
             {
                 if !self
                     .client
-                    .put(format!("{}/{}", self.host, persistent_db))
+                    .put(format!("{}/{}", self.address, persistent_db))
                     .send()
                     .await?
                     .status()
@@ -73,7 +72,7 @@ impl DbConnection {
 
         for transient_db in vec!["network", "connections", "streams"] {
             self.client
-                .delete(format!("{}/{}", self.host, transient_db))
+                .delete(format!("{}/{}", self.address, transient_db))
                 .send()
                 .await?
                 .status()
@@ -81,7 +80,7 @@ impl DbConnection {
 
             if !self
                 .client
-                .put(format!("{}/{}", self.host, transient_db))
+                .put(format!("{}/{}", self.address, transient_db))
                 .send()
                 .await?
                 .status()
@@ -94,10 +93,22 @@ impl DbConnection {
         Ok(())
     }
 
+    pub async fn add_user(&self, user: &User) -> Result<bool> {
+        Ok(self
+            .client
+            .put(format!("{}/users", self.address))
+            .send()
+            .await?
+            .status()
+            .is_success())
+    }
+
+    pub async fn get_iid(&self) -> Result<String> {}
+
     pub async fn list_oid(&self, oid: &str) -> Result<()> {
-    	self
+        self
         .client
-        .get(format!("{}/instances/_all_docs?startkey=%22/{}/%22&endkey=%22{}/%EF%BF%B0%22&include_docs=true", self.host, oid, oid))
+        .get(format!("{}/instances/_all_docs?startkey=%22/{}/%22&endkey=%22{}/%EF%BF%B0%22&include_docs=true", self.address, oid, oid))
         .send()
         .await?;
 
