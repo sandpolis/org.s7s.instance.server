@@ -1,23 +1,21 @@
 use crate::DbConnection;
 use anyhow::Result;
+use core_protocol::core::protocol::GetUserResponse;
 use ring::pbkdf2;
 use serde::{Deserialize, Serialize};
 use std::num::NonZeroU32;
 use validator::Validate;
 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct SessionToken {}
-
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct PasswordHash {
-    pub iterations: NonZeroU32,
+    pub iterations: u32,
 
     pub salt: String,
 
     pub hash: String,
 }
 
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Clone, Serialize, Deserialize, Validate, Default)]
 pub struct User {
     /// The user's unchangable username
     #[validate(length(min = 4), length(max = 20))]
@@ -43,14 +41,14 @@ pub struct User {
     pub expiration: Option<i64>,
 
     #[serde(skip)]
-    pub sessions: Vec<SessionToken>,
+    pub sessions: Vec<String>,
 }
 
 impl User {
     pub fn verify_login(&self, password: &str, totp_token: i32) -> bool {
         if !pbkdf2::verify(
             pbkdf2::PBKDF2_HMAC_SHA256,
-            self.password.iterations,
+            NonZeroU32::new(self.password.iterations).unwrap_or(NonZeroU32::new(1).unwrap()),
             self.password.salt.as_bytes(),
             password.as_bytes(),
             self.password.hash.as_bytes(),
@@ -64,33 +62,13 @@ impl User {
     }
 }
 
-pub struct UserBuilder(User);
-
-impl UserBuilder {
-    pub fn new(username: &str) -> Self {
-        UserBuilder {
-            0: User {
-                username: username.to_string(),
-                password: PasswordHash {
-                    iterations: NonZeroU32::new(1).unwrap(),
-                    salt: String::new(),
-                    hash: String::new(),
-                },
-                totp_token: None,
-                email: None,
-                phone: None,
-                expiration: None,
-                sessions: vec![],
-            },
+impl From<User> for GetUserResponse {
+    fn from(user: User) -> GetUserResponse {
+        GetUserResponse {
+            username: user.username,
+            phone: user.phone.unwrap_or(String::new()),
+            email: user.email.unwrap_or(String::new()),
+            expiration: user.expiration.unwrap_or(0i64),
         }
     }
-
-    pub fn build(&self) -> Result<User> {
-        self.0.validate()?;
-        Ok(self.0)
-    }
-}
-
-impl From<core_protocol::core::protocol::get_user_response::User> for User {
-    fn from(user: core_protocol::core::protocol::get_user_response::User) -> Self {}
 }

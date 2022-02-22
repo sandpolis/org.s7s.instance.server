@@ -1,6 +1,9 @@
+use crate::Banner;
+use crate::ServerContext;
 use crate::User;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
+use std::sync::RwLock;
 
 #[derive(Serialize)]
 struct PostSession {
@@ -103,7 +106,18 @@ impl DbConnection {
             .is_success())
     }
 
-    pub async fn get_iid(&self) -> Result<String> {}
+    /// Load the server context from the database.
+    pub async fn load_context(self) -> Result<ServerContext> {
+        Ok(ServerContext {
+            db: self,
+            iid: String::from(""),
+            users: RwLock::new(vec![]),
+            connections: RwLock::new(vec![]),
+            groups: RwLock::new(vec![]),
+            servers: RwLock::new(vec![]),
+            banner: RwLock::new(Banner {}),
+        })
+    }
 
     pub async fn list_oid(&self, oid: &str) -> Result<()> {
         self

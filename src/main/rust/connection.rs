@@ -1,8 +1,9 @@
 use actix_web::{HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 
+/// Represents a pool of outgoing connections to another server.
 #[derive(Clone, Serialize, Deserialize)]
-pub struct Connection {
+pub struct ServerConnection {
     // The remote instance ID
     pub iid: String,
 
@@ -13,11 +14,11 @@ pub struct Connection {
     pub client: reqwest::Client,
 }
 
-impl Connection {
+impl ServerConnection {
     pub fn new() -> anyhow::Result<Self> {
         let ident = reqwest::Identity::from_pem()?;
 
-        Ok(Connection {
+        Ok(ServerConnection {
             client: reqwest::Client::builder()
                 .cookie_store(true)
                 .http2_prior_knowledge()

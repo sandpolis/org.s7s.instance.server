@@ -10,7 +10,7 @@ use time::OffsetDateTime;
 use validator::Validate;
 
 #[derive(Clone, Serialize, Deserialize, Validate)]
-struct Group {
+pub struct Group {
     #[validate(length(min = 4), length(max = 20))]
     pub name: String,
 

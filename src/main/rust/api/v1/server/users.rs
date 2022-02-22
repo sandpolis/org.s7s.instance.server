@@ -1,11 +1,10 @@
 use crate::api::v1::util::rs_body;
 use crate::user::User;
-use crate::user::UserBuilder;
 use crate::ServerContext;
 use actix_session::Session;
 use actix_web::web;
 use actix_web::{http::StatusCode, HttpRequest, HttpResponse, Result};
-use core_protocol::core::protocol::{GetUserResponse, PostUserRequest};
+use core_protocol::core::protocol::{GetUserResponse, GetUsersResponse, PostUserRequest};
 use prost::Message;
 
 #[actix_web::post("/v1/server/{iid}/users")]
@@ -15,16 +14,18 @@ async fn add_user(
     context: web::Data<ServerContext>,
 ) -> Result<HttpResponse> {
     match PostUserRequest::decode(body) {
-        Ok(rs) => {
+        Err(_) => Ok(HttpResponse::new(StatusCode::BAD_REQUEST)),
+        Ok(rq) => {
             let users = context.users.read().unwrap();
 
-            if let Some(_) = users.iter().find(|&user| user.username == rs.username) {
+            if let Some(_) = users.iter().find(|&user| user.username == rq.username) {
                 Ok(HttpResponse::new(StatusCode::BAD_REQUEST))
             } else {
-                UserBuilder::new(&rs.username).build().unwrap();
+                let mut user = User::default();
+                user.username = rq.username;
+                Ok(HttpResponse::new(StatusCode::OK))
             }
         }
-        Err(_) => Ok(HttpResponse::new(StatusCode::BAD_REQUEST)),
     }
 }
 
@@ -36,31 +37,22 @@ async fn list_users(
     context: web::Data<ServerContext>,
     iid: web::Path<String>,
 ) -> Result<HttpResponse> {
-    /*match check_session(session, &context.db).await {
-        Ok(user) => {
-        },
-        Err(_) =>
-    }*/
-
-    if *iid != context.iid {
-        return forward();
+    match context.get_ref().verify_session(session) {
+        Err(_) => Ok(HttpResponse::new(StatusCode::UNAUTHORIZED)),
+        Ok(_) => {
+            if *iid != context.iid {
+                Ok(HttpResponse::new(StatusCode::UNAUTHORIZED))
+            } else {
+                rs_body!(GetUsersResponse {
+                    user: context
+                        .users
+                        .read()
+                        .unwrap()
+                        .iter()
+                        .map(|user| GetUserResponse::from(user.clone()))
+                        .collect(),
+                })
+            }
+        }
     }
-
-    let users = context.users.read().unwrap();
-
-    check_session!(session, users);
-
-    rs_body!(GetUserResponse {
-        user: users
-            .iter()
-            .map(|user| {
-                core_protocol::core::protocol::get_user_response::User {
-                    username: user.username.clone(),
-                    email: user.email.clone(),
-                    phone: user.phone.clone(),
-                    expiration: user.expiration,
-                }
-            })
-            .collect(),
-    })
 }
